@@ -2,6 +2,13 @@
 
 Contributor guide aligned to the PRD (`memory_bank/design_document.md`) and stack notes (`memory_bank/tech_stack.md`).
 
+
+## always
+- 重要提示：
+- 写任何代码前必须完整阅读 memory-bank/@architecture.md（包含完整数据库结构）
+- 写任何代码前必须完整阅读 memory-bank/@game-design-document.md
+- 每完成一个重大功能或里程碑后，必须更新 memory-bank/@architecture.md
+
 ## Project Structure & Module Organization
 - Current docs live in `memory_bank/`; add future specs under `docs/` at repo root when created.
 - Frontend (TypeScript + React + Vite) goes in `frontend/` with `src/components/`, `src/pages/`, `src/state/` (Zustand), `src/assets/`, `src/tests/`.
