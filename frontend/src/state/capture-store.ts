@@ -22,8 +22,8 @@ export type DetectionBox = DetectionBoxInput & {
 export type TimeState = {
   hour: number
   minute: number
-  dayLabel?: string
-  dateLabel?: string
+  month: number
+  day: number
 }
 
 export type LabelDraft = {
@@ -60,8 +60,8 @@ export interface CaptureState {
 const createDefaultTimeState = (): TimeState => ({
   hour: 8,
   minute: 20,
-  dayLabel: 'Mon',
-  dateLabel: '1',
+  month: 1,
+  day: 1,
 })
 
 const createEmptyLabelDraft = (): LabelDraft => ({
@@ -168,4 +168,3 @@ const captureStoreCreator: StateCreator<CaptureState> = (set, get) => ({
 
 export const createCaptureStore = () => createStore<CaptureState>(captureStoreCreator)
 export const useCaptureStore = create<CaptureState>(captureStoreCreator)
-
