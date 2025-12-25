@@ -1,4 +1,14 @@
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type DragEvent,
+  type KeyboardEvent,
+} from 'react'
 import { Link } from 'react-router-dom'
+import { useCaptureStore } from '../state/capture-store'
 
 const mockBoxes = [
   { id: 'largest', label: '最大物体', size: '约 50% 画面', style: { top: '10%', left: '12%', width: '60%', height: '55%' } },
@@ -16,6 +26,88 @@ const placeholderObjects = [
 ]
 
 const CapturePage = () => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const uploadFile = useCaptureStore((state) => state.uploadFile)
+  const previewUrl = useCaptureStore((state) => state.previewUrl)
+  const setUpload = useCaptureStore((state) => state.setUpload)
+
+  const previewUrlRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (previewUrlRef.current && previewUrlRef.current !== previewUrl) {
+      URL.revokeObjectURL(previewUrlRef.current)
+    }
+    previewUrlRef.current = previewUrl
+  }, [previewUrl])
+
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current)
+      }
+    }
+  }, [])
+
+  const handleBrowseClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const acceptFile = useCallback(
+    (file: File | null) => {
+      if (!file) return
+
+      if (!file.type.startsWith('image/')) {
+        setError('只能上传图片文件，换一张试试吧')
+        return
+      }
+
+      const nextUrl = URL.createObjectURL(file)
+      setUpload(file, nextUrl)
+      setError(null)
+    },
+    [setUpload],
+  )
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null
+    acceptFile(file)
+    event.target.value = ''
+  }
+
+  const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (event: DragEvent<HTMLDivElement>) => {
+    if (event.relatedTarget && event.currentTarget.contains(event.relatedTarget as Node)) {
+      return
+    }
+    setIsDragging(false)
+  }
+
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    setIsDragging(false)
+    const file = event.dataTransfer.files?.[0] ?? null
+    acceptFile(file)
+  }
+
+  const handleEmptyKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      handleBrowseClick()
+    }
+  }
+
+  const dropHint = isDragging
+    ? '松手放进木框，让像素画登场'
+    : previewUrl
+      ? '拖拽图片替换画布，或点击重新选择'
+      : '拖拽或点击上传照片 / 拍照'
+
   return (
     <div className="page capture-page">
       <header className="page-header capture-header">
@@ -36,18 +128,39 @@ const CapturePage = () => {
           <section className="pane preview-pane">
             <div className="pane-top">
               <div className="pane-title">左侧预览区</div>
-              <span className="helper-text subtle">状态：未上传</span>
+              <span className="helper-text subtle">
+                {uploadFile ? `已选择：${uploadFile.name}` : '状态：未上传'}
+              </span>
             </div>
 
             <div className="preview-stage">
-              <div className="preview-canvas">
-                <div className="empty-canvas">
-                  <div className="wooden-frame">
-                    <div className="frame-title">空画布</div>
-                    <p className="frame-desc">上传/拍照后，这里会出现像素化预览与识别框</p>
-                    <div className="pixel-button muted">上传入口占位</div>
+              <div
+                className={`preview-canvas ${isDragging ? 'dragging' : ''}`}
+                onDragOver={handleDragOver}
+                onDragEnter={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                {!previewUrl && (
+                  <div
+                    className="empty-canvas interactive"
+                    onClick={handleBrowseClick}
+                    onKeyDown={handleEmptyKeyDown}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="wooden-frame">
+                      <div className="frame-title">空画布</div>
+                      <p className="frame-desc">上传/拍照后，这里会出现像素化预览与识别框</p>
+                      <button className="pixel-button muted" type="button">
+                        上传照片
+                      </button>
+                      <p className="frame-helper">支持拖拽图片直接放入</p>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {previewUrl && <img alt="上传预览" className="preview-image" src={previewUrl} />}
 
                 <div className="box-layer">
                   {mockBoxes.map((box, index) => (
@@ -81,6 +194,26 @@ const CapturePage = () => {
                   <div className="time-widget">时间组件占位</div>
                   <div className="coin-chip">88888888</div>
                 </div>
+
+                <div className={`drop-hint ${isDragging ? 'active' : ''}`}>
+                  {dropHint}
+                </div>
+                {error && <div className="upload-error">{error}</div>}
+                {uploadFile && (
+                  <div className="upload-file-info">
+                    <span className="file-name">{uploadFile.name}</span>
+                    <button className="text-button" type="button" onClick={handleBrowseClick}>
+                      重新选择
+                    </button>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden-file-input"
+                  onChange={handleFileChange}
+                />
               </div>
             </div>
           </section>
