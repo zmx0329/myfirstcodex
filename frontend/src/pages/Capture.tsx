@@ -133,87 +133,89 @@ const CapturePage = () => {
               </span>
             </div>
 
-            <div className="preview-stage">
-              <div
-                className={`preview-canvas ${isDragging ? 'dragging' : ''}`}
-                onDragOver={handleDragOver}
-                onDragEnter={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-              >
-                {!previewUrl && (
-                  <div
-                    className="empty-canvas interactive"
-                    onClick={handleBrowseClick}
-                    onKeyDown={handleEmptyKeyDown}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <div className="wooden-frame">
-                      <div className="frame-title">空画布</div>
-                      <p className="frame-desc">上传/拍照后，这里会出现像素化预览与识别框</p>
-                      <button className="pixel-button muted" type="button">
-                        上传照片
-                      </button>
-                      <p className="frame-helper">支持拖拽图片直接放入</p>
-                    </div>
-                  </div>
-                )}
-
-                {previewUrl && <img alt="上传预览" className="preview-image" src={previewUrl} />}
-
-                <div className="box-layer">
-                  {mockBoxes.map((box, index) => (
+            <div className="preview-stage wood-frame">
+              <div className="preview-paper paper-sheet">
+                <div
+                  className={`preview-canvas ${isDragging ? 'dragging' : ''}`}
+                  onDragOver={handleDragOver}
+                  onDragEnter={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  {!previewUrl && (
                     <div
-                      key={box.id}
-                      className={`box-outline ${index === 0 ? 'active' : ''}`}
-                      style={box.style}
+                      className="empty-canvas interactive"
+                      onClick={handleBrowseClick}
+                      onKeyDown={handleEmptyKeyDown}
+                      role="button"
+                      tabIndex={0}
                     >
-                      <span className="box-label">{box.label}</span>
+                      <div className="paper-inner">
+                        <div className="frame-title">空画布</div>
+                        <p className="frame-desc">上传/拍照后，这里会出现像素化预览与识别框</p>
+                        <button className="pixel-button muted" type="button">
+                          上传照片
+                        </button>
+                        <p className="frame-helper">支持拖拽图片直接放入</p>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  )}
 
-                <div className="tag-layer">
-                  <div className="tag-placeholder">
-                    <div className="tag-header">
-                      <span className="tag-name">星露谷标签占位</span>
-                      <span className="tag-category">菜品</span>
-                    </div>
-                    <div className="tag-body">
-                      <p>1–2 句描述会显示在这里，点击输入或生成后实时同步。</p>
-                    </div>
-                    <div className="tag-stats">
-                      <span>+能量 80</span>
-                      <span>+生命值 45</span>
+                  {previewUrl && <img alt="上传预览" className="preview-image" src={previewUrl} />}
+
+                  <div className="box-layer">
+                    {mockBoxes.map((box, index) => (
+                      <div
+                        key={box.id}
+                        className={`box-outline ${index === 0 ? 'active' : ''}`}
+                        style={box.style}
+                      >
+                        <span className="box-label">{box.label}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="tag-layer">
+                    <div className="tag-placeholder">
+                      <div className="tag-header">
+                        <span className="tag-name">星露谷标签占位</span>
+                        <span className="tag-category">菜品</span>
+                      </div>
+                      <div className="tag-body">
+                        <p>1–2 句描述会显示在这里，点击输入或生成后实时同步。</p>
+                      </div>
+                      <div className="tag-stats">
+                        <span>+能量 80</span>
+                        <span>+生命值 45</span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="time-coin-placeholder">
-                  <div className="time-widget">时间组件占位</div>
-                  <div className="coin-chip">88888888</div>
-                </div>
-
-                <div className={`drop-hint ${isDragging ? 'active' : ''}`}>
-                  {dropHint}
-                </div>
-                {error && <div className="upload-error">{error}</div>}
-                {uploadFile && (
-                  <div className="upload-file-info">
-                    <span className="file-name">{uploadFile.name}</span>
-                    <button className="text-button" type="button" onClick={handleBrowseClick}>
-                      重新选择
-                    </button>
+                  <div className="time-coin-placeholder">
+                    <div className="time-widget">时间组件占位</div>
+                    <div className="coin-chip">88888888</div>
                   </div>
-                )}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden-file-input"
-                  onChange={handleFileChange}
-                />
+
+                  <div className={`drop-hint ${isDragging ? 'active' : ''}`}>
+                    {dropHint}
+                  </div>
+                  {error && <div className="upload-error">{error}</div>}
+                  {uploadFile && (
+                    <div className="upload-file-info">
+                      <span className="file-name">{uploadFile.name}</span>
+                      <button className="text-button" type="button" onClick={handleBrowseClick}>
+                        重新选择
+                      </button>
+                    </div>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden-file-input"
+                    onChange={handleFileChange}
+                  />
+                </div>
               </div>
             </div>
           </section>
@@ -224,41 +226,43 @@ const CapturePage = () => {
               <span className="helper-text subtle">仅展示布局，不含交互</span>
             </div>
             <div className="editor-stacks">
-              <div className="panel-card form-placeholder">
-                <div className="form-grid">
-                  <div className="form-row">
-                    <span>名称</span>
-                    <div className="field-with-action">
-                      <div className="input-ghost">输入框占位</div>
-                      <div className="mini-chip">更新</div>
+              <div className="panel-card form-placeholder rpg-panel">
+                <div className="paper-sheet">
+                  <div className="form-grid">
+                    <div className="form-row paper-field">
+                      <span>名称</span>
+                      <div className="field-with-action">
+                        <div className="input-ghost">输入框占位</div>
+                        <div className="mini-chip">更新</div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="form-row">
-                    <span>类别</span>
-                    <div className="input-ghost">下拉占位</div>
-                  </div>
-                  <div className="form-row">
-                    <span>描述</span>
-                    <div className="field-with-action">
-                      <div className="input-ghost tall">多行文本占位</div>
-                      <div className="mini-chip">重生</div>
+                    <div className="form-row paper-field">
+                      <span>类别</span>
+                      <div className="input-ghost">下拉占位</div>
                     </div>
-                  </div>
-                  <div className="form-row split">
-                    <div className="stat-ghost">
-                      <span>能量</span>
-                      <div className="input-ghost">数值占位</div>
+                    <div className="form-row paper-field">
+                      <span>描述</span>
+                      <div className="field-with-action">
+                        <div className="input-ghost tall">多行文本占位</div>
+                        <div className="mini-chip">重生</div>
+                      </div>
                     </div>
-                    <div className="stat-ghost">
-                      <span>生命值</span>
-                      <div className="input-ghost">数值占位</div>
+                    <div className="form-row split paper-field">
+                      <div className="stat-ghost">
+                        <span>能量</span>
+                        <div className="input-ghost">数值占位</div>
+                      </div>
+                      <div className="stat-ghost">
+                        <span>生命值</span>
+                        <div className="input-ghost">数值占位</div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="form-row">
-                    <span>时间</span>
-                    <div className="field-with-action">
-                      <div className="input-ghost">同步按钮/时间输入占位</div>
-                      <div className="mini-chip">同步</div>
+                    <div className="form-row paper-field">
+                      <span>时间</span>
+                      <div className="field-with-action">
+                        <div className="input-ghost">同步按钮/时间输入占位</div>
+                        <div className="mini-chip">同步</div>
+                      </div>
                     </div>
                   </div>
                 </div>
